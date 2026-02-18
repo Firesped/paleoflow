@@ -3,51 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaleoFlow MVP</title>
+    <title>PaleoFlow Centurion</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; background: #000; color: white; padding: 20px; }
-        #status-card { border-radius: 25px; padding: 40px 20px; margin-bottom: 25px; transition: all 0.5s ease; border: 1px solid #333; }
-        .anabolic { background: linear-gradient(145deg, #1e3a5f, #121212); } 
-        .catabolic { background: linear-gradient(145deg, #145a32, #121212); } 
-        .early-ketosis { background: linear-gradient(145deg, #7d6608, #121212); }
-        .nutritional-ketosis { background: linear-gradient(145deg, #784212, #121212); }
-        .building { background: linear-gradient(145deg, #4a235a, #121212); }
-        #timer { font-size: 3.5rem; font-weight: 800; margin: 25px 0; font-variant-numeric: tabular-nums; }
-        #phase-name { letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; font-size: 0.9rem; }
-        button { width: 100%; max-width: 300px; padding: 18px; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; background: white; color: black; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        button:active { transform: scale(0.98); }
-        #log { margin-top: 40px; text-align: left; max-width: 450px; margin-left: auto; margin-right: auto; }
-        .log-entry { border-bottom: 1px solid #222; padding: 15px 5px; display: flex; justify-content: space-between; align-items: center; }
-        .log-time { color: #888; font-size: 0.8rem; }
-        .metric-pill { font-size: 0.75rem; color: #aaa; margin-top: 5px; }
-        footer { margin-top: 50px; padding: 20px; font-size: 0.7rem; color: #555; border-top: 1px solid #222; }
+        :root {
+            --ring-bg: #1a1a1a;
+            --color-1: #3498db; /* Day 1: Blue */
+            --color-2: #2ecc71; /* Day 2: Green */
+            --color-3: #f1c40f; /* Day 3: Yellow */
+            --color-4: #e67e22; /* Day 4: Orange */
+            --color-5: #e74c3c; /* Day 5: Red */
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #000; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* Dashboard */
+        #dashboard { position: relative; width: 320px; height: 320px; margin: 20px 0; }
+        svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        circle { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease-out; }
+        .bg-ring { stroke: var(--ring-bg); }
+        
+        #center-info {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; width: 200px;
+        }
+        #phase-name { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 8px; font-weight: bold; }
+        #timer { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        
+        /* Actions */
+        .main-btn { background: white; color: black; border: none; padding: 18px 40px; border-radius: 50px; font-weight: 900; font-size: 1.1rem; margin-top: 30px; width: 100%; max-width: 300px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer; }
+        .main-btn:active { transform: scale(0.96); }
+
+        /* History */
+        #log { width: 100%; max-width: 450px; margin-top: 50px; text-align: left; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 15px; }
+        .log-entry { border-bottom: 1px solid #1a1a1a; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .log-time { font-size: 0.8rem; color: #555; }
+        .metric-pill { font-size: 0.7rem; color: #aaa; margin-top: 4px; background: #111; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+        .row-btns { display: flex; gap: 8px; }
+        .icon-btn { background: #222; border: none; color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; }
+        .del-btn { background: #331111; color: #ff5555; }
+
+        footer { margin-top: auto; padding: 40px 20px; font-size: 0.65rem; color: #444; text-align: center; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-    <div id="status-card" class="anabolic">
-        <div id="phase-name">Ready to Flow</div>
-        <div id="timer">00:00:00</div>
-        <button id="action-btn" onclick="toggleState()">START EATING</button>
+    <div id="dashboard">
+        <svg viewBox="0 0 100 100">
+            <circle class="bg-ring" cx="50" cy="50" r="45"></circle>
+            <circle id="ring1" stroke="var(--color-1)" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283"></circle>
+            <circle class="bg-ring" cx="50" cy="50" r="37"></circle>
+            <circle id="ring2" stroke="var(--color-2)" cx="50" cy="50" r="37" stroke-dasharray="232" stroke-dashoffset="232"></circle>
+            <circle class="bg-ring" cx="50" cy="50" r="29"></circle>
+            <circle id="ring3" stroke="var(--color-3)" cx="50" cy="50" r="29" stroke-dasharray="182" stroke-dashoffset="182"></circle>
+            <circle class="bg-ring" cx="50" cy="50" r="21"></circle>
+            <circle id="ring4" stroke="var(--color-4)" cx="50" cy="50" r="21" stroke-dasharray="132" stroke-dashoffset="132"></circle>
+            <circle class="bg-ring" cx="50" cy="50" r="13"></circle>
+            <circle id="ring5" stroke="var(--color-5)" cx="50" cy="50" r="13" stroke-dasharray="82" stroke-dashoffset="82"></circle>
+        </svg>
+        <div id="center-info">
+            <div id="phase-name">READY</div>
+            <div id="timer">00:00:00</div>
+        </div>
     </div>
 
+    <button id="action-btn" class="main-btn" onclick="toggleState()">START EATING</button>
+
     <div id="log">
-        <h3 style="border-bottom: 2px solid #333; padding-bottom: 10px;">Activity History</h3>
+        <div class="history-header">
+            <h3 style="margin:0;">FLOW HISTORY</h3>
+            <button onclick="manualEntry()" style="background:none; border: 1px solid #333; color: #666; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer;">+ MANUAL</button>
+        </div>
         <div id="log-list"></div>
     </div>
 
     <footer>
         <p>&copy; 2026 PaleoFlow. All Rights Reserved.</p>
-        <p>Disclaimer: PaleoFlow is a tracking tool and does not provide medical advice. Consult a healthcare professional before starting any new fasting protocol.</p>
-        <p>Privacy: Data is stored locally on this device.</p>
+        <p>Your data is stored locally. This is a tracking tool, not medical advice.</p>
     </footer>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('paleoFlowState')) || {
-            isEating: false,
-            startTime: null,
-            logs: []
-        };
+        const SCHEMA_VERSION = 1.3;
+        let state = JSON.parse(localStorage.getItem('paleoFlowState')) || { version: SCHEMA_VERSION, isEating: false, startTime: null, logs: [] };
+
+        if (state.version !== SCHEMA_VERSION) {
+            localStorage.removeItem('paleoFlowState');
+            location.reload();
+        }
 
         function save() { localStorage.setItem('paleoFlowState', JSON.stringify(state)); }
 
@@ -55,75 +96,105 @@
             const now = new Date().getTime();
             state.isEating = !state.isEating;
             state.startTime = now;
-            
             const label = state.isEating ? "Started Eating" : "Finished Eating";
-            state.logs.unshift({ 
-                label, 
-                time: now, 
-                id: now,
-                metrics: { glucose: null, blood: null, breath: null, urine: null } 
-            });
-            
+            state.logs.unshift({ label, time: now, id: now, metrics: { glucose: null, blood: null, breath: null, urine: null } });
             save();
             renderLogs();
             updateUI();
         }
 
-        function editLog(id) {
-            const logIndex = state.logs.findIndex(l => l.id === id);
-            if (logIndex === -1) return;
-
-            const log = state.logs[logIndex];
-            
-            // 1. Edit Time
-            const currentTimeStr = new Date(log.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
-            const newTimeStr = prompt(`Edit time for ${log.label} (HH:MM):`, currentTimeStr);
-            
-            if (newTimeStr) {
-                const [hours, minutes] = newTimeStr.split(':');
-                const newDate = new Date(log.time);
-                newDate.setHours(parseInt(hours), parseInt(minutes));
-                log.time = newDate.getTime();
-                if (logIndex === 0) state.startTime = log.time;
-            }
-
-            // 2. Edit Metrics (Holders)
-            log.metrics.glucose = prompt("Glucose (mg/dL):", log.metrics.glucose || "") || null;
-            log.metrics.blood = prompt("Blood Ketones (mmol/L):", log.metrics.blood || "") || null;
-            log.metrics.breath = prompt("Breath Ketones (ACEs):", log.metrics.breath || "") || null;
-            log.metrics.urine = prompt("Urine Ketones (0-4):", log.metrics.urine || "") || null;
-
-            save();
-            renderLogs();
-            updateUI();
+        function setRing(id, percent, circumference) {
+            const offset = circumference - (percent / 100) * circumference;
+            document.getElementById(id).style.strokeDashoffset = offset;
         }
 
         function updateUI() {
-            if (!state.startTime) return;
-            const now = new Date().getTime();
-            const diff = Math.floor((now - state.startTime) / 1000);
-            const displayDiff = diff < 0 ? 0 : diff;
-            
-            const h = Math.floor(displayDiff / 3600).toString().padStart(2, '0');
-            const m = Math.floor((displayDiff % 3600) / 60).toString().padStart(2, '0');
-            const s = (displayDiff % 60).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
-
-            const hours = displayDiff / 3600;
+            const timerEl = document.getElementById('timer');
+            const phaseEl = document.getElementById('phase-name');
             const btn = document.getElementById('action-btn');
+            
+            if (!state.startTime) {
+                timerEl.innerText = "00:00:00";
+                phaseEl.innerText = "READY";
+                return;
+            }
+            
+            const now = new Date().getTime();
+            const diff = (now - state.startTime) / 1000;
+            const hours = Math.max(0, diff / 3600);
+
+            const h = Math.floor(hours).toString().padStart(2, '0');
+            const m = Math.floor((Math.abs(diff) % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(Math.abs(diff) % 60).toString().padStart(2, '0');
+            timerEl.innerText = `${h}:${m}:${s}`;
+            
             btn.innerText = state.isEating ? "FINISH EATING" : "START EATING";
 
-            const phaseTxt = document.getElementById('phase-name');
-            const card = document.getElementById('status-card');
-
             if (state.isEating) {
-                phaseTxt.innerText = "Current State: Building";
-                card.className = "building";
+                phaseEl.innerText = "Building";
+                [1,2,3,4,5].forEach((i, idx) => setRing('ring'+i, 0, [283,232,182,132,82][idx]));
             } else {
-                if (hours < 4) { phaseTxt.innerText = "Phase: Anabolic"; card.className = "anabolic"; }
-                else if (hours < 12) { phaseTxt.innerText = "Phase: Catabolic"; card.className = "catabolic"; }
-                else if (hours < 18) { phaseTxt.innerText = "Phase: Early Ketosis"; card.className = "early-ketosis"; }
-                else { phaseTxt.innerText = "Phase: Nutritional Ketosis"; card.className = "nutritional-ketosis"; }
+                setRing('ring1', Math.min((hours / 24) * 100, 100), 283);
+                setRing('ring2', Math.max(0, Math.min(((hours - 24) / 24) * 100, 100)), 232);
+                setRing('ring3', Math.max(0, Math.min(((hours - 48) / 24) * 100, 100)), 182);
+                setRing('ring4', Math.max(0, Math.min(((hours - 72) / 24) * 100, 100)), 132);
+                setRing('ring5', Math.max(0, Math.min(((hours - 96) / 24) * 100, 100)), 82);
+
+                if (hours < 24) phaseEl.innerText = "Day 1: Induction";
+                else if (hours < 48) phaseEl.innerText = "Day 2: Ketosis";
+                else if (hours < 72) phaseEl.innerText = "Day 3: Autophagy";
+                else if (hours < 96) phaseEl.innerText = "Day 4: Deep Repair";
+                else phaseEl.innerText = "Day 5: Centurion";
+            }
+        }
+
+        function editLog(id) {
+            const log = state.logs.find(l => l.id === id);
+            const d = new Date(log.time);
+            const currentStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+            const newTime = prompt(`Edit Date/Time (MM/DD HH:MM):`, currentStr);
+            if (newTime) {
+                const [datePart, timePart] = newTime.split(' ');
+                const [m, day] = datePart.split('/');
+                const [h, min] = timePart.split(':');
+                const editDate = new Date();
+                editDate.setMonth(parseInt(m)-1); editDate.setDate(parseInt(day));
+                editDate.setHours(parseInt(h)); editDate.setMinutes(parseInt(min));
+                log.time = editDate.getTime();
+                if (state.logs[0].id === id) state.startTime = log.time;
+            }
+            log.metrics.glucose = prompt("Glucose:", log.metrics.glucose || "");
+            log.metrics.blood = prompt("Blood Ketones:", log.metrics.blood || "");
+            save(); renderLogs(); updateUI();
+        }
+
+        function deleteLog(id) {
+            if (confirm("Delete entry?")) {
+                state.logs = state.logs.filter(l => l.id !== id);
+                if (state.logs.length > 0) {
+                    state.startTime = state.logs[0].time;
+                    state.isEating = (state.logs[0].label === "Started Eating");
+                } else { state.startTime = null; state.isEating = false; }
+                save(); renderLogs(); updateUI();
+            }
+        }
+
+        function manualEntry() {
+            const label = confirm("Started Eating? (Cancel for Finished)") ? "Started Eating" : "Finished Eating";
+            const now = new Date();
+            const timeStr = prompt("Date/Time (MM/DD HH:MM):", `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`);
+            if (timeStr) {
+                const [datePart, timePart] = timeStr.split(' ');
+                const [m, day] = datePart.split('/');
+                const [h, min] = timePart.split(':');
+                const entryDate = new Date();
+                entryDate.setMonth(parseInt(m)-1); entryDate.setDate(parseInt(day));
+                entryDate.setHours(parseInt(h)); entryDate.setMinutes(parseInt(min));
+                const newId = entryDate.getTime();
+                state.logs.push({ label, time: newId, id: newId, metrics: { glucose: null, blood: null, breath: null, urine: null } });
+                state.logs.sort((a,b) => b.time - a.time);
+                if (state.logs[0].id === newId) { state.startTime = newId; state.isEating = (label === "Started Eating"); }
+                save(); renderLogs(); updateUI();
             }
         }
 
@@ -131,29 +202,26 @@
             const list = document.getElementById('log-list');
             list.innerHTML = state.logs.map(entry => {
                 const m = entry.metrics;
-                const metricDisplay = (m.glucose || m.blood || m.breath || m.urine) 
-                    ? `<div class="metric-pill">
-                        ${m.glucose ? `G: ${m.glucose} | ` : ''}
-                        ${m.blood ? `BK: ${m.blood} | ` : ''}
-                        ${m.breath ? `BrK: ${m.breath} | ` : ''}
-                        ${m.urine ? `U: ${m.urine}` : ''}
-                       </div>`
-                    : '';
-
+                const d = new Date(entry.time);
+                const metrics = (m.glucose || m.blood) ? `<br><span class="metric-pill">G: ${m.glucose || '-'} | K: ${m.blood || '-'}</span>` : '';
                 return `
                 <div class="log-entry">
-                    <div>
+                    <div style="flex-grow:1;">
                         <strong>${entry.label}</strong><br>
-                        <span class="log-time">${new Date(entry.time).toLocaleTimeString()}</span>
-                        ${metricDisplay}
+                        <span class="log-time">${d.toLocaleDateString([], {month:'short', day:'numeric'})}, ${d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</span>
+                        ${metrics}
                     </div>
-                    <button onclick="editLog(${entry.id})" style="width: auto; padding: 5px 15px; font-size: 0.7rem; background: #333; color: white;">EDIT</button>
-                </div>
-            `}).join('');
+                    <div class="row-btns">
+                        <button class="icon-btn" onclick="editLog(${entry.id})">EDIT</button>
+                        <button class="icon-btn del-btn" onclick="deleteLog(${entry.id})">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        if (state.startTime) setInterval(updateUI, 1000);
+        setInterval(updateUI, 1000);
         renderLogs();
+        updateUI();
     </script>
 </body>
 </html>
