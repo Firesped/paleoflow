@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaleoFlow MVP</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; background: #000; color: white; padding: 20px; }
+        #status-card { border-radius: 25px; padding: 40px 20px; margin-bottom: 25px; transition: all 0.5s ease; border: 1px solid #333; }
+        .anabolic { background: linear-gradient(145deg, #1e3a5f, #121212); } 
+        .catabolic { background: linear-gradient(145deg, #145a32, #121212); } 
+        .early-ketosis { background: linear-gradient(145deg, #7d6608, #121212); }
+        .nutritional-ketosis { background: linear-gradient(145deg, #784212, #121212); }
+        .building { background: linear-gradient(145deg, #4a235a, #121212); }
+        #timer { font-size: 3.5rem; font-weight: 800; margin: 25px 0; font-variant-numeric: tabular-nums; }
+        #phase-name { letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; font-size: 0.9rem; }
+        button { width: 100%; max-width: 300px; padding: 18px; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; background: white; color: black; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        button:active { transform: scale(0.98); }
+        #log { margin-top: 40px; text-align: left; max-width: 450px; margin-left: auto; margin-right: auto; }
+        .log-entry { border-bottom: 1px solid #222; padding: 15px 5px; display: flex; justify-content: space-between; align-items: center; }
+        .log-time { color: #888; font-size: 0.8rem; }
+        .metric-pill { font-size: 0.75rem; color: #aaa; margin-top: 5px; }
+        footer { margin-top: 50px; padding: 20px; font-size: 0.7rem; color: #555; border-top: 1px solid #222; }
+    </style>
+</head>
+<body>
+
+    <div id="status-card" class="anabolic">
+        <div id="phase-name">Ready to Flow</div>
+        <div id="timer">00:00:00</div>
+        <button id="action-btn" onclick="toggleState()">START EATING</button>
+    </div>
+
+    <div id="log">
+        <h3 style="border-bottom: 2px solid #333; padding-bottom: 10px;">Activity History</h3>
+        <div id="log-list"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 PaleoFlow. All Rights Reserved.</p>
+        <p>Disclaimer: PaleoFlow is a tracking tool and does not provide medical advice. Consult a healthcare professional before starting any new fasting protocol.</p>
+        <p>Privacy: Data is stored locally on this device.</p>
+    </footer>
+
+    <script>
+        let state = JSON.parse(localStorage.getItem('paleoFlowState')) || {
+            isEating: false,
+            startTime: null,
+            logs: []
+        };
+
+        function save() { localStorage.setItem('paleoFlowState', JSON.stringify(state)); }
+
+        function toggleState() {
+            const now = new Date().getTime();
+            state.isEating = !state.isEating;
+            state.startTime = now;
+            
+            const label = state.isEating ? "Started Eating" : "Finished Eating";
+            state.logs.unshift({ 
+                label, 
+                time: now, 
+                id: now,
+                metrics: { glucose: null, blood: null, breath: null, urine: null } 
+            });
+            
+            save();
+            renderLogs();
+            updateUI();
+        }
+
+        function editLog(id) {
+            const logIndex = state.logs.findIndex(l => l.id === id);
+            if (logIndex === -1) return;
+
+            const log = state.logs[logIndex];
+            
+            // 1. Edit Time
+            const currentTimeStr = new Date(log.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+            const newTimeStr = prompt(`Edit time for ${log.label} (HH:MM):`, currentTimeStr);
+            
+            if (newTimeStr) {
+                const [hours, minutes] = newTimeStr.split(':');
+                const newDate = new Date(log.time);
+                newDate.setHours(parseInt(hours), parseInt(minutes));
+                log.time = newDate.getTime();
+                if (logIndex === 0) state.startTime = log.time;
+            }
+
+            // 2. Edit Metrics (Holders)
+            log.metrics.glucose = prompt("Glucose (mg/dL):", log.metrics.glucose || "") || null;
+            log.metrics.blood = prompt("Blood Ketones (mmol/L):", log.metrics.blood || "") || null;
+            log.metrics.breath = prompt("Breath Ketones (ACEs):", log.metrics.breath || "") || null;
+            log.metrics.urine = prompt("Urine Ketones (0-4):", log.metrics.urine || "") || null;
+
+            save();
+            renderLogs();
+            updateUI();
+        }
+
+        function updateUI() {
+            if (!state.startTime) return;
+            const now = new Date().getTime();
+            const diff = Math.floor((now - state.startTime) / 1000);
+            const displayDiff = diff < 0 ? 0 : diff;
+            
+            const h = Math.floor(displayDiff / 3600).toString().padStart(2, '0');
+            const m = Math.floor((displayDiff % 3600) / 60).toString().padStart(2, '0');
+            const s = (displayDiff % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+
+            const hours = displayDiff / 3600;
+            const btn = document.getElementById('action-btn');
+            btn.innerText = state.isEating ? "FINISH EATING" : "START EATING";
+
+            const phaseTxt = document.getElementById('phase-name');
+            const card = document.getElementById('status-card');
+
+            if (state.isEating) {
+                phaseTxt.innerText = "Current State: Building";
+                card.className = "building";
+            } else {
+                if (hours < 4) { phaseTxt.innerText = "Phase: Anabolic"; card.className = "anabolic"; }
+                else if (hours < 12) { phaseTxt.innerText = "Phase: Catabolic"; card.className = "catabolic"; }
+                else if (hours < 18) { phaseTxt.innerText = "Phase: Early Ketosis"; card.className = "early-ketosis"; }
+                else { phaseTxt.innerText = "Phase: Nutritional Ketosis"; card.className = "nutritional-ketosis"; }
+            }
+        }
+
+        function renderLogs() {
+            const list = document.getElementById('log-list');
+            list.innerHTML = state.logs.map(entry => {
+                const m = entry.metrics;
+                const metricDisplay = (m.glucose || m.blood || m.breath || m.urine) 
+                    ? `<div class="metric-pill">
+                        ${m.glucose ? `G: ${m.glucose} | ` : ''}
+                        ${m.blood ? `BK: ${m.blood} | ` : ''}
+                        ${m.breath ? `BrK: ${m.breath} | ` : ''}
+                        ${m.urine ? `U: ${m.urine}` : ''}
+                       </div>`
+                    : '';
+
+                return `
+                <div class="log-entry">
+                    <div>
+                        <strong>${entry.label}</strong><br>
+                        <span class="log-time">${new Date(entry.time).toLocaleTimeString()}</span>
+                        ${metricDisplay}
+                    </div>
+                    <button onclick="editLog(${entry.id})" style="width: auto; padding: 5px 15px; font-size: 0.7rem; background: #333; color: white;">EDIT</button>
+                </div>
+            `}).join('');
+        }
+
+        if (state.startTime) setInterval(updateUI, 1000);
+        renderLogs();
+    </script>
+</body>
+</html>
