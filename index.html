@@ -14,57 +14,53 @@
 
         /* --- STYLIZED LABELS --- */
         .timer-container { text-align: center; margin-top: 15px; }
-
-        /* FLOW Label with Blue Wave */
+        
         .flow-label { 
-            font-size: 1.8rem; font-weight: 900; letter-spacing: 8px; 
-            text-transform: uppercase; margin-bottom: 2px;
+            font-size: 2.2rem; font-weight: 900; letter-spacing: 10px; 
             background: linear-gradient(90deg, #00d2ff, #3a7bd5, #00d2ff);
             background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: wave-blue 3s linear infinite;
-            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.6));
+            animation: wave-blue 3s linear infinite; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.7));
         }
 
-        /* BIO-SHIFT Label with Rainbow Pulse */
         .shift-label { 
-            font-size: 1.4rem; font-weight: 900; letter-spacing: 4px; 
-            text-transform: uppercase; margin-top: 0px;
-            animation: rainbow-pulse 4s ease-in-out infinite;
+            font-size: 1.8rem; font-weight: 900; letter-spacing: 6px; 
+            text-transform: uppercase; margin-top: 5px;
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: spectrum-wave 4s linear infinite;
         }
 
-        /* Clean Timers */
-        #total-flow { font-size: 3.5rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: #fff; }
-        #next-shift { font-family: 'Courier New', monospace; font-size: 1.8rem; font-weight: bold; color: #888; margin-top: 5px; }
+        #total-flow { font-size: 3.8rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; margin-top: 5px;}
+        #next-shift { font-family: 'Courier New', monospace; font-size: 2rem; font-weight: bold; color: #888; margin-top: 5px;}
 
         @keyframes wave-blue { to { background-position: 200% center; } }
-        @keyframes rainbow-pulse {
-            0%, 100% { color: #e74c3c; filter: drop-shadow(0 0 5px #e74c3c); }
-            33% { color: #f1c40f; filter: drop-shadow(0 0 12px #f1c40f); }
-            66% { color: #2ecc71; filter: drop-shadow(0 0 5px #2ecc71); }
-        }
+        @keyframes spectrum-wave { to { background-position: 300% center; } }
 
         /* --- HUD LAYOUT --- */
-        .hud-container { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 480px; margin: 15px 0; }
-        .phase-column { display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+        .hud-container { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 520px; margin: 20px 0; }
+        .phase-column { display: flex; flex-direction: column; gap: 8px; }
+        
         .phase-btn {
-            width: 42px; height: 42px; border-radius: 10px; border: 1px solid #222;
-            background: #0a0a0a; color: #fff; font-size: 0.75rem; font-weight: 800;
-            display: flex; align-items: center; justify-content: center;
+            width: 75px; height: 36px; border-radius: 18px; border: 1px solid #222;
+            background: #0a0a0a; color: #fff; font-size: 0.65rem; font-weight: 900;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: all 0.2s ease; white-space: nowrap;
         }
 
-        #dashboard { position: relative; width: 250px; height: 250px; margin: 0 5px; }
+        #dashboard { position: relative; width: 220px; height: 220px; margin: 0 5px; }
         svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        circle { fill: none; stroke-width: 8; stroke-linecap: round; transition: all 0.8s ease; }
+        circle { fill: none; stroke-width: 10; stroke-linecap: round; transition: all 0.8s ease; }
         .bg-ring { stroke: #111; }
         
-        #center-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 160px; }
-        #phase-name { font-size: 0.95rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
-        #biological-action { font-size: 0.6rem; color: #666; font-weight: bold; margin-top: 4px; text-transform: uppercase; }
+        #center-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 140px; }
+        #phase-name { font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+        #biological-action { font-size: 0.5rem; color: #666; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
 
-        .main-btn { background: #fff; color: #000; border: none; padding: 20px 50px; border-radius: 50px; font-weight: 900; font-size: 1.1rem; margin-top: 20px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; }
+        .main-btn { background: #fff; color: #000; border: none; padding: 22px 55px; border-radius: 60px; font-weight: 900; font-size: 1.1rem; margin-top: 25px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; }
         
-        #history { width: 100%; max-width: 450px; margin-top: 40px; padding-bottom: 40px; }
-        .history-header { display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        #history { width: 100%; max-width: 450px; margin-top: 50px; padding-bottom: 50px; }
+        .history-header { display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 12px; }
         .log-entry { border-bottom: 1px solid #1a1a1a; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -77,11 +73,11 @@
 
     <div class="hud-container">
         <div class="phase-column">
-            <button class="phase-btn" onclick="pInfo(9)" style="border-color: #8e44ad;">10</button>
-            <button class="phase-btn" onclick="pInfo(8)" style="border-color: #c0392b;">9</button>
-            <button class="phase-btn" onclick="pInfo(7)" style="border-color: #e74c3c;">8</button>
-            <button class="phase-btn" onclick="pInfo(6)" style="border-color: #e67e22;">7</button>
-            <button class="phase-btn" onclick="pInfo(5)" style="border-color: #f39c12;">6</button>
+            <button class="phase-btn" onclick="pInfo(9)" style="border-color: #8e44ad;">120h+</button>
+            <button class="phase-btn" onclick="pInfo(8)" style="border-color: #c0392b;">96-120h</button>
+            <button class="phase-btn" onclick="pInfo(7)" style="border-color: #e74c3c;">72-96h</button>
+            <button class="phase-btn" onclick="pInfo(6)" style="border-color: #e67e22;">60-72h</button>
+            <button class="phase-btn" onclick="pInfo(5)" style="border-color: #f39c12;">48-60h</button>
         </div>
 
         <div id="dashboard">
@@ -94,21 +90,21 @@
             </svg>
             <div id="center-info">
                 <div id="phase-name">READY</div>
-                <div id="biological-action">SYSTEMS NOMINAL</div>
+                <div id="biological-action">INITIATE FLOW</div>
             </div>
         </div>
 
         <div class="phase-column">
-            <button class="phase-btn" onclick="pInfo(0)" style="border-color: #3498db;">1</button>
-            <button class="phase-btn" onclick="pInfo(1)" style="border-color: #1abc9c;">2</button>
-            <button class="phase-btn" onclick="pInfo(2)" style="border-color: #2ecc71;">3</button>
-            <button class="phase-btn" onclick="pInfo(3)" style="border-color: #a4db34;">4</button>
-            <button class="phase-btn" onclick="pInfo(4)" style="border-color: #f1c40f;">5</button>
+            <button class="phase-btn" onclick="pInfo(0)" style="border-color: #3498db;">0-4h</button>
+            <button class="phase-btn" onclick="pInfo(1)" style="border-color: #1abc9c;">4-16h</button>
+            <button class="phase-btn" onclick="pInfo(2)" style="border-color: #2ecc71;">16-24h</button>
+            <button class="phase-btn" onclick="pInfo(3)" style="border-color: #a4db34;">24-36h</button>
+            <button class="phase-btn" onclick="pInfo(4)" style="border-color: #f1c40f;">36-48h</button>
         </div>
     </div>
 
     <div class="timer-container" style="margin-top: 0;">
-        <div class="shift-label">BIO-SHIFT</div>
+        <div class="shift-label" id="shift-label-el">BIO-SHIFT</div>
         <div id="next-shift">00:00:00</div>
     </div>
 
@@ -116,14 +112,14 @@
 
     <div id="history">
         <div class="history-header">
-            <h3 style="margin:0; font-size: 0.8rem; letter-spacing: 2px;">HISTORY</h3>
-            <button onclick="manualEntry()" style="background:none; border: 1px solid #333; color: #666; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem;">+ MANUAL</button>
+            <h3 style="margin:0; font-size: 0.9rem; letter-spacing: 2px;">HISTORY</h3>
+            <button onclick="manualEntry()" style="background:none; border: 1px solid #333; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem;">+ MANUAL</button>
         </div>
         <div id="log-list"></div>
     </div>
 
     <script>
-        const SCHEMA_VERSION = 2.6;
+        const SCHEMA_VERSION = 3.4;
         let state = JSON.parse(localStorage.getItem('paleoFlowState')) || { version: SCHEMA_VERSION, isEating: false, startTime: null, logs: [] };
 
         if (state.version !== SCHEMA_VERSION) { 
@@ -132,53 +128,91 @@
         }
 
         const phases = [
-            { h: 4, name: "Anabolic", sub: "Exogenous Fuel", color: "#3498db", info: "Digesting last meal. Insulin active. Fat burning locked." },
-            { h: 16, name: "Catabolic", sub: "Glycogen Depletion", color: "#1abc9c", info: "Liver sugar stores dropping. Body preparing to switch fuel." },
-            { h: 24, name: "Ketosis Transition", sub: "GNG Switch", color: "#2ecc71", info: "Liver creating glucose. Hunger peaks here." },
-            { h: 36, name: "Deep Ketosis", sub: "Brain-Fuel Shift", color: "#a4db34", info: "Brain begins accepting ketones. Mental fog lifts." },
-            { h: 48, name: "Keto-Adapted", sub: "Steady State", color: "#f1c40f", info: "Efficient fat-burning. Hunger typically vanishes." },
-            { h: 60, name: "Autophagy", sub: "Bulk Recycling", color: "#f39c12", info: "Cells recycling damaged proteins and organelles." },
-            { h: 72, name: "Autophagy", sub: "CMA Precision", color: "#e67e22", info: "Precision cellular cleaning. Targeted recycling." },
-            { h: 96, name: "Immune Reset", sub: "HSC Activation", color: "#e74c3c", info: "Stem cell signals for immune regeneration." },
-            { h: 120, name: "Centurion", sub: "Max Efficiency", color: "#c0392b", info: "Total metabolic adaptation and repair." },
-            { h: 999, name: "Master", sub: "Beyond 120h", color: "#8e44ad", info: "Elite metabolic flexibility. Extended repair." }
+            { h: 4, name: "Anabolic", sub: "Exogenous Fuel", color: "#3498db", 
+              vector: "Insulin elevated, glucose transport active. Body in storage mode.",
+              sensory: "Satiety/Fullness. Possible mild post-meal energy dip.",
+              caution: "None. Optimize nutrient density of the last meal." },
+            { h: 16, name: "Catabolic", sub: "Glycogen Depletion", color: "#1abc9c", 
+              vector: "Liver glycogen dropping. Fatty acid mobilization beginning.",
+              sensory: "Cues peak at usual meal times. Mild stamina dip.",
+              caution: "Hydrate. Salt intake helps mitigate early headaches." },
+            { h: 24, name: "Ketosis Transition", sub: "GNG Switch", color: "#2ecc71", 
+              vector: "Metabolic switch flipping. Liver creating glucose from non-carbs.",
+              sensory: "The Hump. Irritability or mild fog common.",
+              caution: "Protocol Warning: Medical awareness advised for flows >24h." },
+            { h: 36, name: "Deep Ketosis", sub: "Brain-Fuel Shift", color: "#a4db34", 
+              vector: "Brain using ketones (BHB). Reduced oxidative stress.",
+              sensory: "Clarity sharpening. Metallic taste sign of ketosis.",
+              caution: "Electrolyte imbalance risk. Target Sodium/Potassium/Magnesium." },
+            { h: 48, name: "Keto-Adapted", sub: "Steady State", color: "#f1c40f", 
+              vector: "Fat-burning engine efficient. Insulin sensitivity improving.",
+              sensory: "Stable energy. Light physical sensation.",
+              caution: "Lowered BP: Avoid rapid standing to prevent dizziness." },
+            { h: 60, name: "Autophagy", sub: "Bulk Recycling", color: "#f39c12", 
+              vector: "Macro-autophagy recycling damaged cellular components.",
+              sensory: "Clearer skin. Possible heightened smell/taste.",
+              caution: "Monitor physical weakness. Don't push through extreme exhaustion." },
+            { h: 72, name: "Autophagy", sub: "CMA Precision", color: "#e67e22", 
+              vector: "Targeted protein cleaning active. Precision recycling.",
+              sensory: "Deep mental calm. Zen-like focus reported.",
+              caution: "Professional oversight strongly advised beyond this threshold." },
+            { h: 96, name: "Immune Reset", sub: "HSC Activation", color: "#e74c3c", 
+              vector: "Old white blood cell recycling triggers stem cell production.",
+              sensory: "Cold sensitivity. Prioritize light activity.",
+              caution: "Avoid HIIT. Conserve energy for deep reconstruction." },
+            { h: 120, name: "Centurion", sub: "Max Efficiency", color: "#c0392b", 
+              vector: "Maximum repair velocity and protein conservation.",
+              sensory: "Clean emptiness. Metabolic peak state.",
+              caution: "Refeeding Hazard: Do NOT break flow with heavy carbs." },
+            { h: 999, name: "Master", sub: "Peak Repair", color: "#8e44ad", 
+              vector: "Profound longevity state and deep rejuvenation.",
+              sensory: "Euphoric clarity. Extended metabolic flexibility.",
+              caution: "Refeeding Syndrome Risk: Expert protocols and slow re-entry required." }
         ];
 
-        function pInfo(i) { alert(`PHASE ${i+1}: ${phases[i].name}\nGoal: ${phases[i].sub}\n\n${phases[i].info}`); }
+        function pInfo(i) {
+            const p = phases[i];
+            alert(`PHASE ${i + 1}: ${p.name.toUpperCase()}\n« BIOLOGICAL VECTOR »\n${p.vector}\n\n« SENSORY FEEDBACK »\n${p.sensory}\n\n« PROTOCOL CAUTION »\n${p.caution}`);
+        }
+
         function formatTime(s) {
             const h = Math.floor(s / 3600).toString().padStart(2, '0');
             const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
             const sec = Math.floor(s % 60).toString().padStart(2, '0');
             return `${h}:${m}:${sec}`;
         }
+
         function save() { localStorage.setItem('paleoFlowState', JSON.stringify(state)); }
+
+        function updateSpectrumWave(curIdx) {
+            const labelEl = document.getElementById('shift-label-el');
+            if (!labelEl) return;
+            const activeIdx = curIdx === -1 ? 9 : curIdx;
+            let stops = [];
+            for (let i = 0; i <= activeIdx; i++) { stops.push(phases[i].color); }
+            const fullGradient = [...stops, ...stops.slice().reverse()].join(', ');
+            labelEl.style.background = `linear-gradient(90deg, ${fullGradient})`;
+            labelEl.style.backgroundSize = "300% auto";
+            labelEl.style.webkitBackgroundClip = "text";
+            labelEl.style.filter = `drop-shadow(0 0 12px ${phases[activeIdx].color}88)`;
+        }
 
         function handleActionButton() {
             if (state.logs.length === 0) {
                 const now = new Date();
-                const defaultT = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
-                const tStr = prompt("Last meal end time (MM/DD HH:MM):", defaultT);
+                const tStr = prompt("Last meal end time (MM/DD HH:MM):", `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`);
                 if (tStr) {
                     try {
-                        const [dp, tp] = tStr.split(' '); 
-                        const [m, d] = dp.split('/'); 
-                        const [h, mi] = tp.split(':');
-                        const start = new Date(); 
-                        start.setMonth(parseInt(m)-1); 
-                        start.setDate(parseInt(d));
-                        start.setHours(parseInt(h)); 
-                        start.setMinutes(parseInt(mi));
+                        const [dp, tp] = tStr.split(' '); const [m, d] = dp.split('/'); const [h, mi] = tp.split(':');
+                        const start = new Date(); start.setMonth(parseInt(m)-1); start.setDate(parseInt(d)); start.setHours(parseInt(h)); start.setMinutes(parseInt(mi));
                         if (start.getTime() > Date.now()) { alert("Future time blocked."); return; }
-                        state.startTime = start.getTime(); 
-                        state.isEating = false;
+                        state.startTime = start.getTime(); state.isEating = false;
                         state.logs.unshift({ label: "Finished Eating", time: state.startTime, id: state.startTime });
                         save(); renderLogs(); updateUI();
-                    } catch(e) { alert("Format: MM/DD HH:MM"); }
+                    } catch(e) { alert("Format Error"); }
                 }
             } else {
-                const now = Date.now(); 
-                state.isEating = !state.isEating; 
-                state.startTime = now;
+                const now = Date.now(); state.isEating = !state.isEating; state.startTime = now;
                 state.logs.unshift({ label: state.isEating ? "Started Eating" : "Finished Eating", time: now, id: now });
                 save(); renderLogs(); updateUI();
             }
@@ -186,23 +220,27 @@
 
         function updateUI() {
             const btn = document.getElementById('action-btn');
-            if (state.logs.length === 0) { 
-                btn.innerText = "START FASTING"; 
-                document.getElementById('total-flow').innerText = "00:00:00";
-                document.getElementById('next-shift').innerText = "00:00:00";
-                return; 
-            }
-            const diff = (Date.now() - state.startTime) / 1000; 
-            const hours = Math.max(0, diff / 3600);
+            if (state.logs.length === 0) { btn.innerText = "START FASTING"; return; }
+            const diff = (Date.now() - state.startTime) / 1000; const hours = Math.max(0, diff / 3600);
             document.getElementById('total-flow').innerText = formatTime(diff);
-            const curIdx = phases.findIndex(p => hours < p.h); 
-            const curP = phases[curIdx] || phases[phases.length - 1];
-            if (!state.isEating && curIdx < phases.length - 1) {
-                document.getElementById('next-shift').innerText = formatTime(Math.max(0, (curP.h * 3600) - diff));
-            } else { document.getElementById('next-shift').innerText = "00:00:00"; }
+            const curIdx = phases.findIndex(p => hours < p.h); const curP = phases[curIdx] || phases[9];
+            
+            updateSpectrumWave(curIdx);
+            
+            const labelEl = document.getElementById('shift-label-el');
+            if (!state.isEating && curIdx < 9 && curIdx !== -1) {
+                const secToNext = (curP.h * 3600) - diff;
+                document.getElementById('next-shift').innerText = formatTime(Math.max(0, secToNext));
+                labelEl.style.animationDuration = secToNext < 3600 ? '1s' : '4s';
+            } else { 
+                document.getElementById('next-shift').innerText = "00:00:00"; 
+                labelEl.style.animationDuration = '4s';
+            }
+            
             document.getElementById('phase-name').innerText = state.isEating ? "BUILDING" : curP.name;
             document.getElementById('biological-action').innerText = state.isEating ? "NUTRIENT LOADING" : curP.sub;
             btn.innerText = state.isEating ? "FINISH EATING" : "START EATING";
+            
             [1,2,3,4,5].forEach((n, i) => {
                 const rh = hours - (i * 24); const pct = state.isEating ? 0 : Math.min(Math.max((rh / 24) * 100, 0), 100);
                 const el = document.getElementById('ring' + n); const circ = [283, 232, 182, 132, 82][i];
@@ -211,13 +249,12 @@
         }
 
         function renderLogs() {
-            const list = document.getElementById('log-list');
-            if (!list) return;
-            list.innerHTML = state.logs.map(e => `<div class="log-entry"><div><strong>${e.label}</strong><br><small style="color:#444">${new Date(e.time).toLocaleString()}</small></div><button style="background:#222; border:none; color:white; padding:8px; border-radius:8px;" onclick="deleteLog(${e.id})">🗑️</button></div>`).join('');
+            const list = document.getElementById('log-list'); if (!list) return;
+            list.innerHTML = state.logs.map(e => `<div class="log-entry"><div><strong>${e.label}</strong><br><small style="color:#444">${new Date(e.time).toLocaleString()}</small></div><button style="background:#222; border:none; color:white; padding:8px 12px; border-radius:10px;" onclick="deleteLog(${e.id})">🗑️</button></div>`).join('');
         }
 
         function deleteLog(id) { if(confirm("Delete?")) { state.logs = state.logs.filter(e => e.id !== id); if(state.logs.length) { state.startTime = state.logs[0].time; state.isEating = state.logs[0].label === "Started Eating"; } else { state.startTime = null; state.isEating = false;} save(); renderLogs(); updateUI(); } }
-        
+
         function manualEntry() {
             const label = confirm("Started Eating? (Cancel for Finished)") ? "Started Eating" : "Finished Eating";
             const timeStr = prompt("Date/Time (MM/DD HH:MM):", `${new Date().getMonth()+1}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes()}`);
