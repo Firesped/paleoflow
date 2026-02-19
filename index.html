@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaleoFlow v4.0</title>
     <style>
-        :root { --active-glow: rgba(52, 152, 219, 0.4); }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: #000; color: white; padding: 10px; 
@@ -35,6 +34,294 @@
         @keyframes wave-blue { to { background-position: 200% center; } }
         @keyframes spectrum-wave { to { background-position: 300% center; } }
 
-        /* --- DASHBOARD & BUTTONS --- */
+        /* --- DASHBOARD --- */
         .hud-container { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 520px; margin: 20px 0; }
-        .phase-column { display: flex
+        .phase-column { display: flex; flex-direction: column; gap: 8px; }
+        .phase-btn {
+            width: 75px; height: 36px; border-radius: 18px; border: 1px solid #222;
+            background: #0a0a0a; color: #fff; font-size: 0.65rem; font-weight: 900;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        #dashboard { position: relative; width: 220px; height: 220px; margin: 0 5px; }
+        svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        circle { fill: none; stroke-width: 10; stroke-linecap: round; transition: all 0.8s ease; }
+        .bg-ring { stroke: #111; }
+        
+        #center-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 140px; }
+        #phase-name { font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+        #biological-action { font-size: 0.5rem; color: #666; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
+
+        .main-btn { background: #fff; color: #000; border: none; padding: 22px 55px; border-radius: 60px; font-weight: 900; font-size: 1.1rem; margin-top: 25px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- LOGS & MODAL --- */
+        #history { width: 100%; max-width: 450px; margin-top: 40px; padding-bottom: 40px;}
+        .log-entry { border-bottom: 1px solid #1a1a1a; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn { background: #111; border: 1px solid #333; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
+
+        #modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: #0a0a0a; border: 1px solid #333; padding: 25px; width: 90%; max-width: 400px;
+            border-radius: 20px; box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+        }
+        .field-group { margin-bottom: 15px; }
+        .field-group label { display: block; font-size: 0.6rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .modal-box input, .modal-box select {
+            width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 10px;
+            border-radius: 8px; box-sizing: border-box; font-size: 1rem;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .save-btn { flex: 2; background: #fff; color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        .cancel-btn { flex: 1; background: #222; color: #fff; border: none; padding: 12px; border-radius: 10px; cursor: pointer; }
+
+        .footer { margin-top: 30px; padding: 20px; text-align: center; color: #333; font-size: 0.7rem; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="timer-container">
+        <div class="flow-label">PALEOFLOW</div>
+        <div id="total-flow">00:00:00</div>
+    </div>
+
+    <div class="hud-container">
+        <div class="phase-column">
+            <button class="phase-btn" onclick="pInfo(9)" style="border-color: #8e44ad;">120h+</button>
+            <button class="phase-btn" onclick="pInfo(8)" style="border-color: #c0392b;">96-120h</button>
+            <button class="phase-btn" onclick="pInfo(7)" style="border-color: #e74c3c;">72-96h</button>
+            <button class="phase-btn" onclick="pInfo(6)" style="border-color: #e67e22;">60-72h</button>
+            <button class="phase-btn" onclick="pInfo(5)" style="border-color: #f39c12;">48-60h</button>
+        </div>
+
+        <div id="dashboard">
+            <svg viewBox="0 0 100 100">
+                <circle class="bg-ring" cx="50" cy="50" r="45"></circle><circle id="ring1" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283"></circle>
+                <circle class="bg-ring" cx="50" cy="50" r="37"></circle><circle id="ring2" cx="50" cy="50" r="37" stroke-dasharray="232" stroke-dashoffset="232"></circle>
+                <circle class="bg-ring" cx="50" cy="50" r="29"></circle><circle id="ring3" cx="50" cy="50" r="29" stroke-dasharray="182" stroke-dashoffset="182"></circle>
+                <circle class="bg-ring" cx="50" cy="50" r="21"></circle><circle id="ring4" cx="50" cy="50" r="21" stroke-dasharray="132" stroke-dashoffset="132"></circle>
+                <circle class="bg-ring" cx="50" cy="50" r="13"></circle><circle id="ring5" cx="50" cy="50" r="13" stroke-dasharray="82" stroke-dashoffset="82"></circle>
+            </svg>
+            <div id="center-info">
+                <div id="phase-name">READY</div>
+                <div id="biological-action">INITIATE FLOW</div>
+            </div>
+        </div>
+
+        <div class="phase-column">
+            <button class="phase-btn" onclick="pInfo(0)" style="border-color: #3498db;">0-4h</button>
+            <button class="phase-btn" onclick="pInfo(1)" style="border-color: #1abc9c;">4-16h</button>
+            <button class="phase-btn" onclick="pInfo(2)" style="border-color: #2ecc71;">16-24h</button>
+            <button class="phase-btn" onclick="pInfo(3)" style="border-color: #a4db34;">24-36h</button>
+            <button class="phase-btn" onclick="pInfo(4)" style="border-color: #f1c40f;">36-48h</button>
+        </div>
+    </div>
+
+    <div class="timer-container" style="margin-top: 0;">
+        <div class="shift-label" id="shift-label-el">BIO-SHIFT</div>
+        <div id="next-shift">00:00:00</div>
+    </div>
+
+    <button id="action-btn" class="main-btn" onclick="handleActionButton()">START FASTING</button>
+
+    <div id="history">
+        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #222; padding-bottom: 10px;">
+            <h3 style="margin:0; font-size: 0.8rem; letter-spacing: 2px;">HISTORY</h3>
+            <button onclick="openManualEntry()" style="background:none; border: 1px solid #333; color: #666; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem;">+ MANUAL</button>
+        </div>
+        <div id="log-list"></div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 AMELIA SERAPHINA CELESTE. ALL RIGHTS RESERVED.<br>
+        PALEOFLOW PROPRIETARY LOGIC & HUD DESIGN.
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <h2>« DATA ACQUISITION »</h2>
+            <input type="hidden" id="edit-id">
+            <div class="field-group">
+                <label>Status Label</label>
+                <select id="edit-label">
+                    <option value="Started Eating">Started Eating</option>
+                    <option value="Finished Eating">Finished Eating</option>
+                    <option value="Metrics">Metrics Checkpoint</option>
+                    <option value="Manual Entry">Manual Entry</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="field-group" style="flex: 1;"><label>Date (MM/DD)</label><input type="text" id="edit-date"></div>
+                <div class="field-group" style="flex: 1;"><label>Time (HH:MM)</label><input type="text" id="edit-time"></div>
+            </div>
+            <div class="field-group"><label>Glucose (mg/dL)</label><input type="number" id="edit-glucose" step="0.1"></div>
+            <div style="display: flex; gap: 5px;">
+                <div class="field-group"><label>AcAc</label><input type="number" id="edit-acac" step="0.1"></div>
+                <div class="field-group"><label>BHB</label><input type="number" id="edit-bhb" step="0.1"></div>
+                <div class="field-group"><label>Acetone</label><input type="number" id="edit-acetone" step="0.1"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
+                <button class="save-btn" onclick="saveEdit()">COMMIT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * PALEOFLOW METABOLIC TRACKER v4.0
+         * Copyright (c) 2026 Amelia Seraphina Celeste. All Rights Reserved.
+         */
+
+        const SCHEMA_VERSION = 4.0;
+        let state = JSON.parse(localStorage.getItem('paleoFlowState')) || { version: SCHEMA_VERSION, isEating: false, startTime: null, logs: [] };
+
+        const phases = [
+            { h: 4, name: "Anabolic", sub: "Exogenous Fuel", color: "#3498db", vector: "Insulin processing nutrients.", sensory: "Satiety.", caution: "None." },
+            { h: 16, name: "Catabolic", sub: "Glycogen Depletion", color: "#1abc9c", vector: "Liver glycogen dropping.", sensory: "Mild hunger.", caution: "Hydrate." },
+            { h: 24, name: "Ketosis Transition", sub: "GNG Switch", color: "#2ecc71", vector: "Metabolic switch flipping.", sensory: "Brain fog.", caution: "Medical oversight." },
+            { h: 36, name: "Deep Ketosis", sub: "Brain-Fuel Shift", color: "#a4db34", vector: "Brain using ketones.", sensory: "Focus sharpening.", caution: "Electrolytes." },
+            { h: 48, name: "Keto-Adapted", sub: "Steady State", color: "#f1c40f", vector: "Fat-burning primary.", sensory: "Zero hunger.", caution: "Slow standing." },
+            { h: 60, name: "Autophagy", sub: "Bulk Recycling", color: "#f39c12", vector: "Cells recycling waste.", sensory: "Clear skin.", caution: "Listen to body." },
+            { h: 72, name: "Autophagy", sub: "CMA Precision", color: "#e67e22", vector: "Targeted protein cleaning.", sensory: "Deep calm.", caution: "Medical supervision." },
+            { h: 96, name: "Immune Reset", sub: "HSC Activation", color: "#e74c3c", vector: "Stem cell signaling.", sensory: "Cold sensitivity.", caution: "Light activity." },
+            { h: 120, name: "Centurion", sub: "Max Efficiency", color: "#c0392b", vector: "Peak repair velocity.", sensory: "Clean feeling.", caution: "Refeed slowly." },
+            { h: 999, name: "Master", sub: "Peak Repair", color: "#8e44ad", vector: "Longevity state.", sensory: "Euphoria.", caution: "Refeeding hazard." }
+        ];
+
+        function save() { localStorage.setItem('paleoFlowState', JSON.stringify(state)); }
+
+        function formatTime(s) {
+            const h = Math.floor(s / 3600).toString().padStart(2, '0');
+            const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+            const sec = Math.floor(s % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${sec}`;
+        }
+
+        function pInfo(i) {
+            const p = phases[i];
+            alert(`PHASE ${i + 1}: ${p.name.toUpperCase()}\n« VECTOR »\n${p.vector}\n\n« SENSORY »\n${p.sensory}\n\n« CAUTION »\n${p.caution}`);
+        }
+
+        function updateSpectrumWave(curIdx) {
+            const labelEl = document.getElementById('shift-label-el');
+            const activeIdx = (curIdx === -1 || curIdx === undefined) ? 9 : curIdx;
+            let colorStops = [];
+            for (let i = 0; i <= activeIdx; i++) { colorStops.push(phases[i].color); }
+            const fullGradient = [...colorStops, ...colorStops.slice().reverse()].join(', ');
+            labelEl.style.background = `linear-gradient(90deg, ${fullGradient})`;
+            labelEl.style.backgroundSize = "300% auto";
+            labelEl.style.webkitBackgroundClip = "text";
+            labelEl.style.filter = `drop-shadow(0 0 12px ${phases[activeIdx].color}88)`;
+        }
+
+        function handleActionButton() {
+            const now = Date.now();
+            state.isEating = !state.isEating;
+            state.startTime = now;
+            state.logs.unshift({ label: state.isEating ? "Started Eating" : "Finished Eating", time: now, id: now, metrics: {} });
+            save(); renderLogs(); updateUI();
+        }
+
+        function openManualEntry() {
+            const now = new Date();
+            document.getElementById('edit-id').value = "NEW";
+            document.getElementById('edit-date').value = `${now.getMonth()+1}/${now.getDate()}`;
+            document.getElementById('edit-time').value = `${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function editLog(id) {
+            const e = state.logs.find(x => x.id === id);
+            const d = new Date(e.time);
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-label').value = e.label;
+            document.getElementById('edit-date').value = `${d.getMonth()+1}/${d.getDate()}`;
+            document.getElementById('edit-time').value = `${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+            document.getElementById('edit-glucose').value = e.metrics?.glucose || '';
+            document.getElementById('edit-acac').value = e.metrics?.acac || '';
+            document.getElementById('edit-bhb').value = e.metrics?.bhb || '';
+            document.getElementById('edit-acetone').value = e.metrics?.acetone || '';
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+
+        function saveEdit() {
+            try {
+                const id = document.getElementById('edit-id').value;
+                const [m, d] = document.getElementById('edit-date').value.split('/');
+                const [h, min] = document.getElementById('edit-time').value.split(':');
+                const date = new Date(); date.setMonth(m-1); date.setDate(d); date.setHours(h); date.setMinutes(min); date.setSeconds(0);
+                const time = date.getTime();
+
+                const data = {
+                    label: document.getElementById('edit-label').value,
+                    time: time, id: time,
+                    metrics: {
+                        glucose: document.getElementById('edit-glucose').value || null,
+                        acac: document.getElementById('edit-acac').value || null,
+                        bhb: document.getElementById('edit-bhb').value || null,
+                        acetone: document.getElementById('edit-acetone').value || null
+                    }
+                };
+
+                if (id === "NEW") { state.logs.push(data); } 
+                else { const idx = state.logs.findIndex(x => x.id == id); state.logs[idx] = data; }
+
+                state.logs.sort((a,b) => b.time - a.time);
+                const anchor = state.logs.find(l => l.label === "Started Eating" || l.label === "Finished Eating");
+                if (anchor) { state.startTime = anchor.time; state.isEating = anchor.label === "Started Eating"; }
+
+                save(); renderLogs(); updateUI(); closeModal();
+            } catch(e) { alert("Format Error."); }
+        }
+
+        function deleteLog(id) { if(confirm("Purge?")) { state.logs = state.logs.filter(x => x.id != id); save(); renderLogs(); updateUI(); } }
+
+        function updateUI() {
+            if (!state.startTime) return;
+            const diff = (Date.now() - state.startTime) / 1000;
+            const hours = Math.max(0, diff / 3600);
+            document.getElementById('total-flow').innerText = formatTime(diff);
+            
+            const curIdx = phases.findIndex(p => hours < p.h);
+            const curP = phases[curIdx] || phases[9];
+            updateSpectrumWave(curIdx);
+
+            const labelEl = document.getElementById('shift-label-el');
+            if (!state.isEating && curIdx < 9) {
+                const sNext = (curP.h * 3600) - diff;
+                document.getElementById('next-shift').innerText = formatTime(Math.max(0, sNext));
+                labelEl.style.animationDuration = sNext < 3600 ? '1s' : '4s';
+            } else { document.getElementById('next-shift').innerText = "00:00:00"; labelEl.style.animationDuration = '4s'; }
+
+            document.getElementById('phase-name').innerText = state.isEating ? "BUILDING" : curP.name;
+            document.getElementById('biological-action').innerText = state.isEating ? "NUTRIENT LOADING" : curP.sub;
+            document.getElementById('action-btn').innerText = state.isEating ? "FINISH EATING" : "START EATING";
+
+            [1,2,3,4,5].forEach((n, i) => {
+                const rh = hours - (i * 24); const pct = state.isEating ? 0 : Math.min(Math.max((rh / 24) * 100, 0), 100);
+                const el = document.getElementById('ring' + n); const circ = [283, 232, 182, 132, 82][i];
+                el.style.strokeDashoffset = circ - (pct / 100) * circ; el.style.stroke = state.isEating ? "#111" : curP.color;
+            });
+        }
+
+        function renderLogs() {
+            document.getElementById('log-list').innerHTML = state.logs.map(e => `
+                <div class="log-entry">
+                    <div>
+                        <strong>${e.label}</strong><br><small style="color:#666">${new Date(e.time).toLocaleString()}</small>
+                        ${e.metrics?.glucose || e.metrics?.bhb ? `<div style="font-size:0.6rem; color:#3498db; margin-top:3px;">G: ${e.metrics.glucose || '--'} | B: ${e.metrics.bhb || '--'}</div>` : ''}
+                    </div>
+                    <div><button class="icon-btn" onclick="editLog(${e.id})">✏️</button><button class="icon-btn" onclick="deleteLog(${e.id})">🗑️</button></div>
+                </div>`).join('');
+        }
+
+        setInterval(updateUI, 1000);
+        renderLogs(); updateUI();
+    </script>
+</body>
+</html>
